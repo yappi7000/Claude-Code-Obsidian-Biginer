@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIクローン脳 セットアップガイド【超初心者版】</title>
+<style>
+  :root {
+    --red: #e24b4a;
+    --red-light: #fcebeb;
+    --red-mid: #f09595;
+    --gold: #ef9f27;
+    --gold-light: #faeeda;
+    --green: #1d9e75;
+    --green-light: #e1f5ee;
+    --green-dark: #085041;
+    --blue: #378add;
+    --blue-light: #e6f1fb;
+    --blue-dark: #185fa5;
+    --purple: #534ab7;
+    --purple-light: #eeedfe;
+    --gray-bg: #f8f8f8;
+    --gray-dark: #2c2c2a;
+    --gray-mid: #888;
+    --text: #1a1a1a;
+    --text-sub: #555;
+    --border: #e0e0e0;
+    --card-bg: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', sans-serif;
+    background: #0d0d12;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .wrapper { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+    border-radius: 2px;
+  }
+  .hero .label {
+    display: inline-block;
+    background: #1a1a2e;
+    color: var(--gold);
+    border: 1px solid #333;
+    font-size: 11px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.08em;
+  }
+  .hero h1 {
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    color: #f0f0f0;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero .sub {
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.8;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 2.5rem 0;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .prog-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .prog-dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    background: #1a1a2e;
+    border: 2px solid #333;
+    color: #666;
+  }
+  .prog-dot.active { background: var(--red); border-color: var(--red); color: white; }
+  .prog-label { font-size: 10px; color: #666; text-align: center; white-space: nowrap; }
+  .prog-line { width: 32px; height: 2px; background: #333; margin-bottom: 18px; }
+
+  /* TOTAL TIME */
+  .total-time {
+    background: #13131f;
+    border: 1px solid #2a2a3e;
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .total-time .tt-label { font-size: 12px; color: #888; margin-bottom: 0.5rem; }
+  .total-time .tt-num { font-size: 40px; font-weight: 700; color: var(--gold); }
+  .total-time .tt-unit { font-size: 16px; color: #aaa; margin-left: 4px; }
+  .total-time .tt-note { font-size: 12px; color: #666; margin-top: 0.5rem; }
+  .time-breakdown {
+    display: flex; justify-content: center; gap: 1.5rem;
+    margin-top: 1rem; flex-wrap: wrap;
+  }
+  .tb-item { text-align: center; }
+  .tb-step { font-size: 10px; color: #888; }
+  .tb-min { font-size: 18px; font-weight: 700; color: #ccc; }
+  .tb-sep { font-size: 20px; color: #333; align-self: center; }
+
+  /* STEP CARD */
+  .step-card {
+    background: #13131f;
+    border: 1px solid #2a2a3e;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid #2a2a3e;
+  }
+  .step-num-badge {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-num-badge.s1 { background: #1a2535; color: var(--blue); border: 2px solid var(--blue); }
+  .step-num-badge.s2 { background: #1a2535; color: var(--green); border: 2px solid var(--green); }
+  .step-num-badge.s3 { background: #1a1a2e; color: var(--purple); border: 2px solid var(--purple); }
+  .step-num-badge.s4 { background: #1f1a10; color: var(--gold); border: 2px solid var(--gold); }
+  .step-num-badge.s5 { background: #1f1010; color: var(--red); border: 2px solid var(--red); }
+  .step-header-info { flex: 1; }
+  .step-header-info h2 { font-size: 18px; font-weight: 700; color: #f0f0f0; margin-bottom: 0.25rem; }
+  .step-header-info .step-meta { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+  .step-time-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 12px;
+    font-weight: 600;
+  }
+  .s1 .step-time-badge { background: var(--blue-light); color: var(--blue-dark); }
+  .s2 .step-time-badge { background: var(--green-light); color: var(--green-dark); }
+  .s3 .step-time-badge { background: var(--purple-light); color: var(--purple); }
+  .s4 .step-time-badge { background: var(--gold-light); color: #7a4a00; }
+  .s5 .step-time-badge { background: var(--red-light); color: #8b1a1a; }
+  .step-difficulty {
+    font-size: 11px; color: #888;
+  }
+
+  .step-body { padding: 1.5rem; }
+
+  /* INTRO BOX */
+  .intro-box {
+    background: #0d0d18;
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    border-left: 3px solid;
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.8;
+  }
+  .intro-box.blue { border-color: var(--blue); }
+  .intro-box.green { border-color: var(--green); }
+  .intro-box.purple { border-color: var(--purple); }
+  .intro-box.gold { border-color: var(--gold); }
+  .intro-box.red { border-color: var(--red); }
+
+  /* SUB SECTION */
+  .sub-section { margin-bottom: 1.5rem; }
+  .sub-title {
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #888; margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .sub-title::after { content: ''; flex: 1; height: 1px; background: #2a2a3e; }
+
+  /* INSTRUCTION STEPS */
+  .inst-steps { display: flex; flex-direction: column; gap: 0.75rem; }
+  .inst-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: #0d0d18;
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    border: 1px solid #2a2a3e;
+  }
+  .inst-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .inst-num.blue { background: var(--blue-light); color: var(--blue-dark); }
+  .inst-num.green { background: var(--green-light); color: var(--green-dark); }
+  .inst-num.purple { background: var(--purple-light); color: var(--purple); }
+  .inst-num.gold { background: var(--gold-light); color: #7a4a00; }
+  .inst-num.red { background: var(--red-light); color: #8b1a1a; }
+  .inst-content { flex: 1; }
+  .inst-main { font-size: 14px; color: #e0e0e0; line-height: 1.7; }
+  .inst-main strong { color: #fff; font-weight: 600; }
+  .inst-sub { font-size: 12px; color: #888; margin-top: 0.35rem; line-height: 1.6; }
+
+  /* IMAGE PLACEHOLDER */
+  .img-placeholder {
+    background: #1a1a2e;
+    border: 1px dashed #3a3a5e;
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+    margin: 0.75rem 0;
+    font-size: 12px;
+    color: #666;
+  }
+  .img-placeholder .img-icon { font-size: 24px; margin-bottom: 0.35rem; display: block; }
+
+  /* CODE BLOCK */
+  .code-wrap { margin: 0.75rem 0; }
+  .code-label {
+    font-size: 11px; color: #888;
+    background: #1a1a2e;
+    padding: 4px 12px;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid #2a2a3e;
+    border-bottom: none;
+    display: inline-block;
+  }
+  .code-block {
+    background: #0a0a0f;
+    border: 1px solid #2a2a3e;
+    border-radius: 0 8px 8px 8px;
+    padding: 1rem 1.25rem;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 13px;
+    color: #9fe1cb;
+    overflow-x: auto;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .code-block .comment { color: #555; }
+  .code-block .cmd { color: #ef9f27; }
+  .code-block .path { color: #85b7eb; }
+  .code-block .str { color: #9fe1cb; }
+
+  /* COPY HINT */
+  .copy-hint {
+    font-size: 11px; color: #666;
+    text-align: right; margin-top: 0.35rem;
+  }
+
+  /* TIP BOX */
+  .tip-box {
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin: 0.75rem 0;
+    font-size: 13px;
+    line-height: 1.7;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .tip-box.info { background: #0f1a2e; border: 1px solid #1d3a6e; color: #a8c8f0; }
+  .tip-box.warn { background: #1f1a0f; border: 1px solid #5a4010; color: #f0c070; }
+  .tip-box.success { background: #0a1f17; border: 1px solid #0f5035; color: #70d0a0; }
+  .tip-box.danger { background: #1f0f0f; border: 1px solid #5a1515; color: #f09090; }
+  .tip-box .tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* CHECK LIST */
+  .check-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .check-item {
+    display: flex; gap: 0.75rem; align-items: flex-start;
+    background: #0d0d18; border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #2a2a3e;
+    font-size: 13px; color: #ccc; line-height: 1.6;
+  }
+  .check-item .ci { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+  /* OS TABS */
+  .os-tabs { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+  .os-tab {
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #2a2a3e;
+    background: #13131f;
+    color: #888;
+  }
+  .os-tab.active { background: var(--purple); border-color: var(--purple); color: white; }
+
+  /* FILE BLOCK */
+  .file-block {
+    background: #0a0a0f;
+    border: 1px solid #2a2a3e;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0.75rem 0;
+  }
+  .file-header {
+    background: #1a1a2e;
+    padding: 8px 14px;
+    display: flex; align-items: center; gap: 0.5rem;
+    border-bottom: 1px solid #2a2a3e;
+  }
+  .file-header .fh-icon { font-size: 14px; }
+  .file-header .fh-name { font-size: 12px; color: #aaa; font-family: monospace; }
+  .file-content {
+    padding: 1rem 1.25rem;
+    font-family: monospace;
+    font-size: 12px;
+    color: #9fe1cb;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+  .file-content .fc-comment { color: #555; }
+  .file-content .fc-key { color: #ef9f27; }
+  .file-content .fc-val { color: #9fe1cb; }
+
+  /* RESULT PREVIEW */
+  .result-preview {
+    background: #0a1f17;
+    border: 1px solid #1d6e4e;
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    margin: 0.75rem 0;
+  }
+  .result-preview .rp-label { font-size: 11px; color: #3d9e75; margin-bottom: 0.5rem; font-weight: 600; letter-spacing: 0.05em; }
+  .result-preview .rp-content { font-size: 13px; color: #90d0b0; line-height: 1.7; }
+
+  /* DIVIDER */
+  .step-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .step-divider::before, .step-divider::after {
+    content: ''; flex: 1; height: 1px; background: #2a2a3e;
+  }
+  .step-divider span { font-size: 11px; color: #555; white-space: nowrap; }
+
+  /* CONGRATS */
+  .congrats {
+    background: linear-gradient(135deg, #0a1f17, #13131f);
+    border: 1px solid #1d6e4e;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .congrats .cg-icon { font-size: 40px; margin-bottom: 0.75rem; display: block; }
+  .congrats h3 { font-size: 20px; font-weight: 700; color: #70d0a0; margin-bottom: 0.5rem; }
+  .congrats p { font-size: 13px; color: #90b8a0; line-height: 1.8; }
+
+  /* NEXT STEPS */
+  .next-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
+  .next-card {
+    background: #13131f;
+    border: 1px solid #2a2a3e;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .next-card .nc-icon { font-size: 22px; margin-bottom: 0.5rem; display: block; }
+  .next-card .nc-title { font-size: 13px; font-weight: 600; color: #e0e0e0; margin-bottom: 0.35rem; }
+  .next-card .nc-desc { font-size: 11px; color: #888; line-height: 1.5; }
+
+  /* CTA */
+  .cta {
+    background: #13131f;
+    border: 1px solid #2a2a3e;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--red), var(--gold), var(--green));
+  }
+  .cta h3 { font-size: 18px; font-weight: 700; color: #f0f0f0; margin-bottom: 0.75rem; }
+  .cta p { font-size: 13px; color: #888; line-height: 1.8; }
+  .cta .cta-hl { color: var(--gold); font-weight: 600; }
+
+  @media (max-width: 560px) {
+    .next-grid { grid-template-columns: 1fr; }
+    .time-breakdown { gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="label">🏎️ 超初心者向け完全セットアップガイド</div>
+    <h1>AIクローン脳を<br><span>今夜30分</span>で作る<br>5ステップ完全解説</h1>
+    <p class="sub">プログラミング経験ゼロ・ターミナル未経験・Obsidian初めて<br>全部OK。読めば必ず1人でできます。</p>
+  </div>
+
+  <!-- TOTAL TIME -->
+  <div class="total-time">
+    <div class="tt-label">⏱ 合計所要時間</div>
+    <div><span class="tt-num">30</span><span class="tt-unit">分</span></div>
+    <div class="tt-note">仕事から帰った後でも余裕で完成する</div>
+    <div class="time-breakdown">
+      <div class="tb-item"><div class="tb-step">Step①</div><div class="tb-min">5分</div></div>
+      <div class="tb-sep">+</div>
+      <div class="tb-item"><div class="tb-step">Step②</div><div class="tb-min">3分</div></div>
+      <div class="tb-sep">+</div>
+      <div class="tb-item"><div class="tb-step">Step③</div><div class="tb-min">10分</div></div>
+      <div class="tb-sep">+</div>
+      <div class="tb-item"><div class="tb-step">Step④</div><div class="tb-min">7分</div></div>
+      <div class="tb-sep">+</div>
+      <div class="tb-item"><div class="tb-step">Step⑤</div><div class="tb-min">5分</div></div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 1 ==================== -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge s1">①</div>
+      <div class="step-header-info">
+        <h2>📱 Obsidianをインストールする</h2>
+        <div class="step-meta">
+          <span class="step-time-badge" style="background:#e6f1fb;color:#185fa5;">⏱ 約5分</span>
+          <span class="step-difficulty">難易度 ★☆☆☆☆（超かんたん）</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="intro-box blue">
+        まずは<strong>Obsidian（オブシディアン）</strong>というメモアプリをパソコンに入れます。<br>
+        「メモ帳みたいなもの」と思っておけばOK。完全無料で、会員登録も不要です。<br>
+        これがAIクローン脳の「入れ物」になります。
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">インストール手順</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num blue">1</div>
+            <div class="inst-content">
+              <div class="inst-main">ブラウザで <strong>obsidian.md</strong> にアクセスする</div>
+              <div class="inst-sub">ChromeでもSafariでも何でもOK。URLバーに「obsidian.md」と入力してEnterキーを押すだけ。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num blue">2</div>
+            <div class="inst-content">
+              <div class="inst-main">画面の真ん中にある <strong>「Download」ボタン</strong> をクリックする</div>
+              <div class="inst-sub">WindowsならWindows用、MacならMac用が自動で表示されます。そのままクリックするだけ。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num blue">3</div>
+            <div class="inst-content">
+              <div class="inst-main">ダウンロードされたファイルを開いてインストールする</div>
+              <div class="inst-sub">
+                <strong>Windowsの場合：</strong> ダウンロードしたファイル（.exe）をダブルクリック→「次へ」を押し続けるだけ。<br>
+                <strong>Macの場合：</strong> ダウンロードしたファイル（.dmg）をダブルクリック→Obsidianアイコンをアプリケーションフォルダにドラッグ。
+              </div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num blue">4</div>
+            <div class="inst-content">
+              <div class="inst-main">Obsidianを起動する</div>
+              <div class="inst-sub">インストールが終わったらObsidianを開きます。最初に「Create new vault」という画面が出ます。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num blue">5</div>
+            <div class="inst-content">
+              <div class="inst-main"><strong>「Create new vault」</strong>をクリックして、好きな名前をつける</div>
+              <div class="inst-sub">
+                「Vault name（保管庫の名前）」に好きな名前を入力します。<br>
+                例：「副業ナレッジ」「My Brain」「AIメモ帳」など何でもOK。<br>
+                場所はデスクトップか書類フォルダでOK。後から変えられます。
+              </div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num blue">6</div>
+            <div class="inst-content">
+              <div class="inst-main"><strong>「Create」</strong>ボタンを押す</div>
+              <div class="inst-sub">押したらObsidianが開きます。左側にファイル一覧、真ん中が編集エリア。これで完成！</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box success">
+        <span class="tip-icon">✅</span>
+        <div><strong>完了の確認：</strong> Obsidianが開いて、左側に空のファイル一覧が表示されていればOKです。</div>
+      </div>
+
+      <div class="tip-box warn">
+        <span class="tip-icon">⚠️</span>
+        <div><strong>「ウイルスの可能性があります」と警告が出た場合（Windowsのみ）：</strong><br>
+        「詳細情報」→「実行」の順にクリックすれば続けられます。Obsidianは世界中で使われている安全なアプリです。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== STEP 2 ==================== -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge s2">②</div>
+      <div class="step-header-info">
+        <h2>📁 3つのフォルダを作る</h2>
+        <div class="step-meta">
+          <span class="step-time-badge" style="background:#e1f5ee;color:#085041;">⏱ 約3分</span>
+          <span class="step-difficulty">難易度 ★☆☆☆☆（超かんたん）</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="intro-box green">
+        AIクローン脳の「棚」を3つ作ります。<br>
+        <strong>raw（ろー）</strong>＝何でも放り込む場所　<strong>wiki（ウィキ）</strong>＝AIが整理する場所　<strong>outputs（アウトプッツ）</strong>＝完成品置き場<br>
+        この3つだけ！「もっと細かく分類しよう」と考えてはいけません。複雑にしたら続きません。
+      </div>
+
+      <div class="tip-box danger">
+        <span class="tip-icon">🚫</span>
+        <div><strong>絶対にやってはいけないこと：</strong> 「業界別フォルダ」「日付別フォルダ」「プロジェクト別フォルダ」などを作り込もうとすること。これをやるとNotionと同じ結末になります。3フォルダで即スタートが鉄則。</div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">フォルダ作成手順</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num green">1</div>
+            <div class="inst-content">
+              <div class="inst-main">Obsidianの左側のパネルで<strong>右クリック</strong>する（空白の部分をクリック）</div>
+              <div class="inst-sub">左側の「ファイル一覧エリア」の何もないところを右クリックするとメニューが出ます。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num green">2</div>
+            <div class="inst-content">
+              <div class="inst-main">「<strong>New folder</strong>（新規フォルダ）」をクリックする</div>
+              <div class="inst-sub">日本語設定の場合は「新規フォルダ」と表示されている場合もあります。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num green">3</div>
+            <div class="inst-content">
+              <div class="inst-main"><strong>「raw」</strong>と入力してEnterキーを押す</div>
+              <div class="inst-sub">英語の小文字で「raw」と入力。日本語入力がオンになってる場合は半角英数に切り替えてから入力してください。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num green">4</div>
+            <div class="inst-content">
+              <div class="inst-main">同じ手順で<strong>「wiki」</strong>フォルダを作る</div>
+              <div class="inst-sub">また左側の空白を右クリック→New folder→「wiki」と入力→Enter。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num green">5</div>
+            <div class="inst-content">
+              <div class="inst-main">同じ手順で<strong>「outputs」</strong>フォルダを作る</div>
+              <div class="inst-sub">また左側の空白を右クリック→New folder→「outputs」と入力→Enter。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-preview">
+        <div class="rp-label">✅ 完成するとこんな見た目になります</div>
+        <div class="rp-content">
+📁 あなたのVault名<br>
+　├── 📁 raw<br>
+　├── 📁 wiki<br>
+　└── 📁 outputs
+        </div>
+      </div>
+
+      <div class="tip-box info">
+        <span class="tip-icon">💡</span>
+        <div>左側に「raw」「wiki」「outputs」の3つのフォルダが並んでいればOKです。順番が違っても問題ありません。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== STEP 3 ==================== -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge s3">③</div>
+      <div class="step-header-info">
+        <h2>💻 Claude Codeをインストールする</h2>
+        <div class="step-meta">
+          <span class="step-time-badge" style="background:#eeedfe;color:#534ab7;">⏱ 約10分</span>
+          <span class="step-difficulty">難易度 ★★☆☆☆（ここだけ少し手順多め）</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="intro-box purple">
+        ここが少しだけハードルに感じる部分ですが、<strong>コピー&貼り付けだけでできます。</strong><br>
+        「ターミナル」という黒い画面を使いますが、怖くないです。コマンドを1行貼り付けるだけ。<br>
+        2つのものをインストールします：① Node.js（土台）　② Claude Code（本体）
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">まず前提：Claude Proプランについて</div>
+        <div class="tip-box warn">
+          <span class="tip-icon">💳</span>
+          <div>Claude Codeを使うには<strong>Claude Proプラン（月$20＝約3,000円）</strong>が必要です。<br>
+          最初の1ヶ月で時間的に確実に元を取れますが、事前にclaude.aiでプランを確認しておいてください。</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">① まず Node.js をインストール</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num purple">1</div>
+            <div class="inst-content">
+              <div class="inst-main">ブラウザで <strong>nodejs.org</strong> にアクセスする</div>
+              <div class="inst-sub">URLバーに「nodejs.org」と入力してEnter。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num purple">2</div>
+            <div class="inst-content">
+              <div class="inst-main"><strong>「LTS」と書いてあるボタン</strong>をクリックしてダウンロード</div>
+              <div class="inst-sub">「LTS」＝安定版という意味。画面に2つボタンがありますが、必ずLTSの方を選んでください。右側の「Current」は選ばない。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num purple">3</div>
+            <div class="inst-content">
+              <div class="inst-main">ダウンロードしたファイルを開いてインストール</div>
+              <div class="inst-sub">「次へ」や「Continue」を押し続けるだけでOK。途中で選択肢が出てきますが、全部デフォルト（初期設定のまま）で進めて大丈夫です。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-divider"><span>Node.jsインストール完了したら次へ</span></div>
+
+      <div class="sub-section">
+        <div class="sub-title">② ターミナルを開く</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num purple">4</div>
+            <div class="inst-content">
+              <div class="inst-main">「ターミナル」アプリを開く</div>
+              <div class="inst-sub">
+                <strong>Macの場合：</strong> Spotlight（⌘+スペース）で「ターミナル」と検索→開く。または「アプリケーション」→「ユーティリティ」→「ターミナル」。<br><br>
+                <strong>Windowsの場合：</strong> スタートメニュー（Windowsキー）で「PowerShell」と検索→「Windows PowerShell」を開く。または「コマンドプロンプト」でも可。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-box info">
+          <span class="tip-icon">💡</span>
+          <div><strong>ターミナルって何？</strong><br>
+          黒い（または白い）画面に文字を打ち込んでパソコンに命令する道具です。怖く見えますが、やることはコピー&貼り付けだけ。プログラマーじゃなくても全然使えます。</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">③ Claude Codeをインストール</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num purple">5</div>
+            <div class="inst-content">
+              <div class="inst-main">ターミナルに以下のコマンドを<strong>コピー&貼り付け</strong>してEnterキーを押す</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-wrap">
+          <div class="code-label">ターミナルに貼り付けるコマンド</div>
+          <div class="code-block"><span class="cmd">npm install -g @anthropic-ai/claude-code</span></div>
+        </div>
+        <div class="copy-hint">↑ このコマンドをそのままコピーしてターミナルに貼り付けてください</div>
+
+        <div class="tip-box info">
+          <span class="tip-icon">💡</span>
+          <div>
+            <strong>貼り付け方：</strong><br>
+            Mac：Cmd+V　／　Windows：Ctrl+V　（ターミナルの中にカーソルがある状態で）<br><br>
+            Enterを押すと文字がたくさん流れますが正常です。1〜2分待てば自動で終わります。
+          </div>
+        </div>
+
+        <div class="inst-steps" style="margin-top:0.75rem;">
+          <div class="inst-step">
+            <div class="inst-num purple">6</div>
+            <div class="inst-content">
+              <div class="inst-main">インストールが終わったら、<strong>Vaultフォルダに移動する</strong>コマンドを入力</div>
+              <div class="inst-sub">「cd」はフォルダを移動するコマンドです。パスは自分のVaultの場所に合わせてください。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-wrap">
+          <div class="code-label">Macの場合（例：デスクトップに「副業ナレッジ」を作った場合）</div>
+          <div class="code-block"><span class="cmd">cd</span> <span class="path">~/Desktop/副業ナレッジ</span></div>
+        </div>
+
+        <div class="code-wrap">
+          <div class="code-label">Windowsの場合（例：デスクトップに「副業ナレッジ」を作った場合）</div>
+          <div class="code-block"><span class="cmd">cd</span> <span class="path">C:\Users\あなたの名前\Desktop\副業ナレッジ</span></div>
+        </div>
+
+        <div class="tip-box warn">
+          <span class="tip-icon">⚠️</span>
+          <div><strong>「副業ナレッジ」の部分は自分がつけたVault名に変えてください。</strong><br>
+          フォルダの場所が分からない場合：ObsidianでVaultを右クリック→「ファイルエクスプローラーで表示」→そのフォルダのパスをコピーしてcdの後ろに貼り付けてOK。</div>
+        </div>
+
+        <div class="inst-steps" style="margin-top:0.75rem;">
+          <div class="inst-step">
+            <div class="inst-num purple">7</div>
+            <div class="inst-content">
+              <div class="inst-main">最後に <strong>claude</strong> と入力してEnterを押す</div>
+              <div class="inst-sub">これでClaude Codeがあなたのフォルダを認識します。初回はClaudeのアカウントでログインを求められるので、画面の指示に従ってください。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-wrap">
+          <div class="code-label">起動コマンド</div>
+          <div class="code-block"><span class="cmd">claude</span></div>
+        </div>
+      </div>
+
+      <div class="tip-box success">
+        <span class="tip-icon">✅</span>
+        <div><strong>完了の確認：</strong> 「Welcome to Claude Code」や入力待ちの画面が出ればインストール成功です！</div>
+      </div>
+
+      <div class="tip-box info">
+        <span class="tip-icon">🆘</span>
+        <div><strong>詰まったときの最強の解決策：</strong><br>
+        Claudeのチャット画面を開いて「Claude Codeのインストール方法をターミナル未経験の初心者向けに1コマンドずつ丁寧に教えて」と聞いてください。環境に合わせて手取り足取り教えてくれます。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== STEP 4 ==================== -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge s4">④</div>
+      <div class="step-header-info">
+        <h2>📝 AIへの「設計図」を2枚書く</h2>
+        <div class="step-meta">
+          <span class="step-time-badge" style="background:#faeeda;color:#7a4a00;">⏱ 約7分</span>
+          <span class="step-difficulty">難易度 ★★☆☆☆（コピペでいける）</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="intro-box gold">
+        AIに「このフォルダをどう使うか」を教える設計図を2枚作ります。<br>
+        <strong>CLAUDE.md</strong>＝AIへのルール集　<strong>Memory.md</strong>＝あなた自身の情報<br>
+        この2枚を作るかどうかで、AIの回答精度が劇的に変わります。絶対に省略しないでください。
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">① CLAUDE.md を作る（AIへのルール）</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num gold">1</div>
+            <div class="inst-content">
+              <div class="inst-main">Obsidianで新しいファイルを作る</div>
+              <div class="inst-sub">左側パネルの空白を右クリック→「New note（新規ノート）」をクリック。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num gold">2</div>
+            <div class="inst-content">
+              <div class="inst-main">ファイル名を <strong>「CLAUDE」</strong> にする（全部大文字）</div>
+              <div class="inst-sub">名前の変更はファイルの上をクリックして入力するだけ。拡張子（.md）は自動でつきます。フォルダの中ではなく、Vaultのルート（一番上の階層）に置いてください。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num gold">3</div>
+            <div class="inst-content">
+              <div class="inst-main">以下の内容を<strong>コピー&貼り付け</strong>する</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="file-block">
+          <div class="file-header">
+            <span class="fh-icon">📄</span>
+            <span class="fh-name">CLAUDE.md（これをそのままコピーしてOK）</span>
+          </div>
+          <div class="file-content"><span class="fc-comment"># このVaultの運用ルール</span>
+
+<span class="fc-key">## フォルダ構成</span>
+<span class="fc-val">- /raw/ → 元素材置き場。絶対に書き換えない。読み取り専用。
+- /wiki/ → AIが管理する知識ベース。要約・概念ページを置く。
+- /outputs/ → 完成したアウトプット置き場。</span>
+
+<span class="fc-key">## 新しい素材を処理するときのルール</span>
+<span class="fc-val">1. raw/ の内容を読む
+2. 日本語で要約ページをwiki/ に作る
+3. 関連する概念・人物・キーワードのページも作る
+4. 既存のwikiページがあれば、新情報を追記して更新する
+5. ページ同士を [[ページ名]] 形式でリンクする</span>
+
+<span class="fc-key">## 質問に答えるときのルール</span>
+<span class="fc-val">- wiki/ の内容を検索して、引用元を明示しながら答える
+- 情報が見つからない場合はその旨を伝える
+- 回答は日本語で、わかりやすく</span>
+
+<span class="fc-key">## Memory.mdについて</span>
+<span class="fc-val">- Memory.md に私自身の情報が書いてある
+- 回答の際はこの情報を参考にして、私の状況に合わせた提案をする</span></div>
+        </div>
+
+        <div class="tip-box success">
+          <span class="tip-icon">✅</span>
+          <div>このまま貼り付けてOKです。後で自分なりに変えたくなったら自由に変えられます。まずはこれで動かすことが大事。</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">② Memory.md を作る（あなた自身の情報）</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num gold">4</div>
+            <div class="inst-content">
+              <div class="inst-main">同じ手順で <strong>「Memory」</strong> という名前のファイルを作る</div>
+              <div class="inst-sub">CLAUDE.mdと同じ場所（Vaultのルート）に作ってください。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num gold">5</div>
+            <div class="inst-content">
+              <div class="inst-main">以下のテンプレートを貼り付けて、<strong>[ ] の部分を自分の情報に書き換える</strong></div>
+              <div class="inst-sub">完璧に書く必要はありません。思いつく範囲で埋めるだけでOK。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="file-block">
+          <div class="file-header">
+            <span class="fh-icon">👤</span>
+            <span class="fh-name">Memory.md（[ ]の部分を自分の情報に書き換えてください）</span>
+          </div>
+          <div class="file-content"><span class="fc-comment"># 私の情報</span>
+
+<span class="fc-key">## 仕事について</span>
+<span class="fc-val">- 職種：[例：会社員・営業職]
+- 業界：[例：IT・不動産・製造業など]
+- 今進めているプロジェクト：[例：新規顧客開拓、社内DX推進など]</span>
+
+<span class="fc-key">## 副業について</span>
+<span class="fc-val">- やっている（やりたい）副業：[例：Xでの情報発信・受託ライティングなど]
+- 副業の目標：[例：月5万円稼ぐ・フォロワー1000人など]
+- ターゲット読者・顧客：[例：副業を始めたい会社員など]</span>
+
+<span class="fc-key">## 興味・関心のある分野</span>
+<span class="fc-val">- [例：AI活用・MNP・不動産投資・筋トレなど]</span>
+
+<span class="fc-key">## 最近の悩み・課題</span>
+<span class="fc-val">- [例：リサーチに時間がかかる・ネタが思いつかない・発信が続かないなど]</span>
+
+<span class="fc-key">## 好きな文章スタイル</span>
+<span class="fc-val">- [例：口語体・丁寧語・箇条書き多め・短い文章など]</span></div>
+        </div>
+
+        <div class="tip-box info">
+          <span class="tip-icon">💡</span>
+          <div><strong>うまく書けない場合の裏技：</strong><br>
+          Claudeのチャット画面で「私は○○（職業）で○○という副業をやっています。副業の目標は○○です。私の情報をMemory.mdに書くために、質問してください」と話しかけてみてください。Claudeが質問してくれるので、答えていくうちに自然にMemory.mdの内容ができあがります。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== STEP 5 ==================== -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge s5">⑤</div>
+      <div class="step-header-info">
+        <h2>🎉 最初の記事を放り込んで動かしてみる</h2>
+        <div class="step-meta">
+          <span class="step-time-badge" style="background:#fcebeb;color:#8b1a1a;">⏱ 約5分</span>
+          <span class="step-difficulty">難易度 ★☆☆☆☆（一番楽しい瞬間）</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="intro-box red">
+        いよいよ動かしてみます！<br>
+        最近読んで「これ良かったな」と思った記事を1本だけ選んでください。<br>
+        それをAIに渡すだけで、<strong>8〜15ページ分のWikiが自動生成されます。</strong>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">① 記事をraw/フォルダに保存する</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num red">1</div>
+            <div class="inst-content">
+              <div class="inst-main">好きな記事をブラウザで開いて、<strong>本文をすべてコピー</strong>する</div>
+              <div class="inst-sub">Ctrl+A（全選択）→ Ctrl+C（コピー）で全文コピーできます。記事の長さは問いません。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num red">2</div>
+            <div class="inst-content">
+              <div class="inst-main">Obsidianで <strong>raw/フォルダ</strong> をクリックして選択する</div>
+              <div class="inst-sub">左側のパネルで「raw」フォルダをクリックします。</div>
+            </div>
+          </div>
+          <div class="inst-step">
+            <div class="inst-num red">3</div>
+            <div class="inst-content">
+              <div class="inst-main">raw/フォルダの中に<strong>新規ノート</strong>を作って、コピーした記事を貼り付ける</div>
+              <div class="inst-sub">rawフォルダを右クリック→「New note」→ファイル名は何でもOK（例：「AI副業記事20241201」など）→本文をCtrl+Vで貼り付け。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-box info">
+          <span class="tip-icon">💡</span>
+          <div><strong>もっと楽にやりたい場合（おすすめ）：</strong><br>
+          Chromeに「Obsidian Web Clipper」という拡張機能を入れると、ブラウザのボタン1クリックでrawフォルダに保存できます。Chromeウェブストアで「Obsidian Web Clipper」と検索してインストールするだけ。</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">② Claude Codeに処理を頼む</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num red">4</div>
+            <div class="inst-content">
+              <div class="inst-main">ターミナルのClaude Code画面（さっきの黒い画面）に以下を<strong>コピー&貼り付け</strong>してEnter</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-wrap">
+          <div class="code-label">Claude Codeに送るメッセージ（コピーして貼り付けるだけ）</div>
+          <div class="code-block"><span class="str">raw/に新しい記事を入れました。
+以下をお願いします：
+1. 記事を読んで日本語で要約ページをwiki/に作る
+2. 記事に出てくる重要な概念・キーワードのページも作る
+3. 関連するページ同士をリンクでつなぐ
+4. 最後に「作ったページ一覧」を教える</span></div>
+        </div>
+
+        <div class="tip-box warn">
+          <span class="tip-icon">⏳</span>
+          <div>Enterを押したら1〜2分待ちます。AIが記事を読んでページを作成しています。画面に文字が流れていれば正常です。</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">③ グラフビューで「育った知識」を確認する</div>
+        <div class="inst-steps">
+          <div class="inst-step">
+            <div class="inst-num red">5</div>
+            <div class="inst-content">
+              <div class="inst-main">Obsidianで <strong>Ctrl+G</strong>（Macは Cmd+G）を押す</div>
+              <div class="inst-sub">グラフビューが開きます。丸いノード（点）と線でつながったネットワーク図が表示されます。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-preview">
+          <div class="rp-label">🌟 こんな状態になれば完璧です</div>
+          <div class="rp-content">
+✅ wiki/ フォルダの中に複数のページが生成されている<br>
+✅ グラフビューを開くと、丸いノードが線でつながっている<br>
+✅ 「作ったページ一覧」がClaude Codeの返答に出ている
+          </div>
+        </div>
+
+        <div class="tip-box success">
+          <span class="tip-icon">🎉</span>
+          <div><strong>おめでとうございます！</strong><br>
+          記事1本から8〜15ページ分の構造化されたWikiが自動で生成されました。これがAIクローン脳の「始まりの1ページ目」です。これを毎週2〜3本続けるだけで、1ヶ月後には全く別世界の体験ができます。</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <div class="sub-title">試しに質問してみよう</div>
+        <div class="tip-box info">
+          <span class="tip-icon">💬</span>
+          <div>
+            セットアップ完了後、Claude Codeにこんな質問を試してみてください：<br><br>
+            「今wiki/にある情報を使って、副業に役立ちそうな内容を3つまとめて」<br><br>
+            自分で入れた記事の内容を元に、AIがあなたの状況に合わせた回答を返してくれます。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONGRATS -->
+  <div class="congrats">
+    <span class="cg-icon">🏁</span>
+    <h3>セットアップ完了！</h3>
+    <p>土台が完成しました。<br>
+    あとは週2〜3本のペースでraw/に記事を放り込み続けるだけ。<br>
+    1ヶ月後には「調べ直し」がほぼゼロになる体験が待っています。</p>
+  </div>
+
+  <!-- NEXT STEPS -->
+  <div class="next-grid">
+    <div class="next-card">
+      <span class="nc-icon">📥</span>
+      <div class="nc-title">毎週やること</div>
+      <div class="nc-desc">raw/に記事を2〜3本放り込んで「処理して」と頼むだけ</div>
+    </div>
+    <div class="next-card">
+      <span class="nc-icon">💬</span>
+      <div class="nc-title">慣れてきたら</div>
+      <div class="nc-desc">「あの件の情報まとめて」と質問するQuery操作を覚える</div>
+    </div>
+    <div class="next-card">
+      <span class="nc-icon">🔍</span>
+      <div class="nc-title">月1回だけ</div>
+      <div class="nc-desc">「古い情報・矛盾してる箇所を見つけて修正案を出して」</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h3>🏎️ F1エンジニアはデータを積み上げて戦略を磨く<br>あなたも今夜から積み上げ始めよう</h3>
+    <p>副業に必要なのは「気合」じゃなくて「時間」と「ネタ」。<br>
+    <span class="cta-hl">AIクローン脳は、その両方を同時に解決する。</span><br><br>
+    詰まったらClaudeに聞けばいい。AIが手取り足取り教えてくれます。<br>
+    まず今夜、Step①のObsidianインストールだけやってみてください。</p>
+  </div>
+
+</div>
+</body>
+</html>
